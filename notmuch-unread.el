@@ -56,6 +56,7 @@
 (define-minor-mode notmuch-unread-mode
   "Display unread mail count in the mode line"
   :global t
+  :require 'notmuch
   (and notmuch-unread-update-timer
        (cancel-timer notmuch-unread-update-timer))
   (if notmuch-unread-mode
