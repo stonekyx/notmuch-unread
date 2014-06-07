@@ -1,9 +1,6 @@
 ;;; notmuch-unread.el --- Display unread mail count in the mode line
 
-;; Copyright (C) 2014  David Thompson
-
-;; Author: David Thompson <davet@gnu.org>
-;; Keywords: mail
+;; Copyright (C) 2014  David Thompson <davet@gnu.org>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
