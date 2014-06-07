@@ -1,7 +1,7 @@
 # notmuch-unread
 
-A global minor mode that displays the number of unread messages in the
-notmuch database in the mode line.
+A global minor mode for Emacs that displays the number of unread
+messages in the notmuch database in the mode line.
 
 ## Installation
 
