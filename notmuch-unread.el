@@ -1,4 +1,6 @@
 ;;; notmuch-unread.el --- Display unread mail count in the mode line
+;;; Package-Requires: ((notmuch "0.18"))
+;;; Version: 0.1
 
 ;; Copyright (C) 2014  David Thompson <davet@gnu.org>
 
