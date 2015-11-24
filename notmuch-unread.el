@@ -2,6 +2,7 @@
 ;;; Package-Requires: ((notmuch "0.18"))
 ;;; Version: 0.1
 
+;; Copyright (C) 2015  Tyler Earnest <tmearnest@gmail.com>
 ;; Copyright (C) 2014  David Thompson <davet@gnu.org>
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -27,6 +28,8 @@
 (defvar notmuch-unread-mode-line-string nil
   "String to display in the mode line.")
 
+(put 'notmuch-unread-mode-line-string 'risky-local-variable t)
+
 (defvar notmuch-unread-update-timer nil
   "Timer for updating the mode line.")
 
@@ -40,6 +43,21 @@
   :type 'string
   :group 'notmuch-unread)
 
+(defcustom notmuch-unread-icon " 📧 "
+  "String to show on modeline"
+  :type 'string
+  :group 'notmuch-unread)
+
+(defcustom notmuch-unread-icon-color-unread "#98d32f"
+  "Color for unread mail"
+  :type 'color
+  :group 'notmuch-unread)
+
+(defcustom notmuch-unread-icon-color-read "grey70"
+  "Color for read mail"
+  :type 'color
+  :group 'notmuch-unread)
+
 (defun notmuch-unread-count ()
   "Return the number of messages that match
 `notmuch-unread-search-term`."
@@ -48,10 +66,31 @@
     "\n" ""
     (notmuch-command-to-string "count" notmuch-unread-search-term))))
 
+(defvar notmuch-unread-keymap
+    (let ((map (make-sparse-keymap)))
+      (define-key map [mode-line mouse-1]
+        (lambda ()
+            (interactive)
+            (notmuch-search notmuch-unread-search-term)))
+      (define-key map [mode-line mouse-3]
+        (lambda ()
+            (interactive)
+            (notmuch)))
+      map)
+   "Keymap to enable notmuch-search unread on click")
+
 (defun notmuch-unread-update-handler ()
   "Update the mode line."
-  (setq notmuch-unread-mode-line-string
-        (format " [✉ %d]" (notmuch-unread-count)))
+  (let* ((ct (notmuch-unread-count))
+        (color (if (= ct 0)
+                   notmuch-unread-icon-color-read
+                 notmuch-unread-icon-color-unread)))
+    (setq notmuch-unread-mode-line-string
+          (propertize notmuch-unread-icon
+                    'face `(:foreground ,color)
+                    'mouse-face `(:foreground ,color :box (:line-width 1 :style released-button :color "grey75") )
+                    'help-echo (format "%d unread. Mouse-1 to show unread. Mouse-3 to open notmuch" ct)
+                    'keymap notmuch-unread-keymap)))
   (force-mode-line-update))
 
 ;;;###autoload
@@ -63,8 +102,8 @@
        (cancel-timer notmuch-unread-update-timer))
   (if notmuch-unread-mode
       (progn
-       (add-to-list 'global-mode-string
-                    'notmuch-unread-mode-line-string t)
+       (setq global-mode-string (append (or global-mode-string '(""))
+                                           '(notmuch-unread-mode-line-string)))
        (setq notmuch-unread-update-timer
              (run-at-time nil notmuch-unread-update-interval
                           'notmuch-unread-update-handler)))
