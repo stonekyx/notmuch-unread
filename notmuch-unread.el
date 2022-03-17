@@ -86,7 +86,7 @@
                    notmuch-unread-icon-color-read
                  notmuch-unread-icon-color-unread)))
     (setq notmuch-unread-mode-line-string
-          (propertize notmuch-unread-icon
+          (propertize (string-join (list notmuch-unread-icon (number-to-string ct)) "")
                     'face `(:foreground ,color)
                     'mouse-face `(:foreground ,color :box (:line-width 1 :style released-button :color "grey75") )
                     'help-echo (format "%d unread. Mouse-1 to show unread. Mouse-3 to open notmuch" ct)
